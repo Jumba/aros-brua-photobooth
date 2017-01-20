@@ -3,11 +3,11 @@
 require("vendor/autoload.php");
 
 /////// CONFIG ///////
-$username = 'arosbrua';
-$password = 'FundashonProBrua2016';
+$username = $argv[1];
+$password = $argv[2];
 $debug = false;
 
-$photo_id = $argv[1];
+$photo_id = $argv[3];
 
 //////////////////////
 

@@ -8,7 +8,6 @@ $username = $argv[2];
 $password = $argv[3];
 $debug = false;
 
-$photo = '/home/calvin/Develop/photobooth/out/28748c7b-72aa-4de9-804c-84d061b4c9c6.jpg';     // path to the photo
 $caption = '#arosbrua #ron25+1';     // caption
 //////////////////////
 
