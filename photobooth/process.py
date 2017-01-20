@@ -38,7 +38,7 @@ class ImageProcessor(object):
         t = ThreadedMover(self, self.app.camera.get_batch_code())
         t.start()
 
-        self.app.next_image(filename)
+        self.app.next_image(file_location)
 
     def process(self):
         self.app.clear_next()
@@ -54,7 +54,7 @@ class ImageProcessor(object):
                 file_location = join(self.out_dir, 'main-{}'.format(filename))
                 shutil.move(files[0], file_location)
             self.watermark(file_location)
-            self.app.next_image(filename)
+            self.app.next_image(file_location)
         elif len(files) > 1:
             # Create a collage.
             create_collage(files, self.options, self.on_collage_complete)

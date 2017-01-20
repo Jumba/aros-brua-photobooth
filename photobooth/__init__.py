@@ -23,6 +23,8 @@ QUALITY_SKEL = 0
 QUALITY_FAST = 1
 QUALITY_BEST = 2
 
+INSTAGRAM_USERNAME = 'arosbrua'
+INSTAGRAM_PASSWORD = os.environ.get('INSTAGRAM_PASSWORD')
 
 class Options(object):
     def __init__(self):

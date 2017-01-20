@@ -38,7 +38,7 @@ class Camera(object):
             print("Succesfully took {} pictures".format(count))
             subprocess.call('gphoto2 --list-files', shell=True)
         except subprocess.CalledProcessError:
-            self.app.exit("Camera error 1. Exiting.")
+            self.app.force_exit("Camera error 1. Exiting.")
 
     def download_images(self):
         try:
@@ -51,7 +51,7 @@ class Camera(object):
 
             subprocess.call('gphoto2 --delete-all-files --recurse', shell=True)
         except subprocess.CalledProcessError:
-            self.app.exit("Camera error 2. Exiting.")
+            self.app.force_exit("Camera error 2. Exiting.")
 
     def get_batch_code(self):
         return 'B{0:04d}'.format(self.batch)
