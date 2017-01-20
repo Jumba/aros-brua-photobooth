@@ -46,9 +46,8 @@ class Camera(object):
             output = subprocess.check_output('gphoto2 --get-all-files', shell=True)
             files = re.findall('IMG_\d+.JPG', str(output))
 
-            with self.app.transfer_lock:
-                for file in files:
-                    shutil.move(file, os.path.join(self.output_directory, '{}-{}'.format(batch_code, file)))
+            for file in files:
+                shutil.move(file, os.path.join(self.output_directory, '{}-{}'.format(batch_code, file)))
 
             subprocess.call('gphoto2 --delete-all-files --recurse', shell=True)
         except subprocess.CalledProcessError:

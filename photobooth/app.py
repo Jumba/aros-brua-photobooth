@@ -3,9 +3,10 @@ from threading import Lock
 import sys
 from qtpy.QtWidgets import QApplication
 
-from photobooth import NEW_IMAGES, Options, PROCESSED_IMAGES
+from photobooth import NEW_IMAGES, Options, PROCESSED_IMAGES, UPLOADED_IMAGES
 from photobooth.camera import Camera
 from photobooth.process import ImageProcessor
+from photobooth.uploader import UploadManager
 
 
 class PhotoboothApplication(QApplication):
@@ -18,12 +19,14 @@ class PhotoboothApplication(QApplication):
         self.camera = None
         self.options = Options()
         self.processor = ImageProcessor(self, self.options, NEW_IMAGES, PROCESSED_IMAGES)
+        self.uploader = UploadManager(self, PROCESSED_IMAGES, UPLOADED_IMAGES )
 
         self._next_image = None
 
     def setup_photobooth(self, camera_model):
         self.camera = Camera(self, camera_model, NEW_IMAGES)
         self.setup = True
+        self.uploader.start()
 
     def start(self):
         assert self.setup, "Setup not completed.'"

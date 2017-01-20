@@ -4,8 +4,9 @@ from os.path import isfile, join
 from threading import Thread
 from uuid import uuid4
 
+from photobooth import WATERMARK
 from photobooth.render import create_collage
-
+import PIL.Image
 
 class ThreadedMover(Thread):
     def __init__(self, processor, batch_code):
@@ -17,7 +18,9 @@ class ThreadedMover(Thread):
         for file in os.listdir(self.processor.in_dir):
             filename = join(self.processor.in_dir, file)
             if isfile(filename) and self.batch_code in file:
-                shutil.move(filename, join(self.processor.out_dir, self.processor.get_filename()))
+                self.processor.watermark(filename)
+                with self.processor.app.transfer_lock:
+                    shutil.move(filename, join(self.processor.out_dir, self.processor.get_filename()))
 
 
 class ImageProcessor(object):
@@ -29,7 +32,9 @@ class ImageProcessor(object):
 
     def on_collage_complete(self, image):
         filename = self.get_filename()
-        image.save(join(self.out_dir, 'main-{}'.format(filename)))
+        file_location = join(self.out_dir, 'main-{}'.format(filename))
+        image.save(file_location)
+        self.watermark(file_location)
         t = ThreadedMover(self, self.app.camera.get_batch_code())
         t.start()
 
@@ -39,18 +44,31 @@ class ImageProcessor(object):
         self.app.clear_next()
         files = []
         for file in os.listdir(self.in_dir):
-            if isfile(join(self.in_dir, file)):
+            if isfile(join(self.in_dir, file)) and not file == ".gitignore":
                 files.append(join(self.in_dir, file))
 
         # Single shot
         if len(files) == 1:
             filename = self.get_filename()
-            shutil.move(files[0], join(self.out_dir, 'main-{}'.format(filename)))
+            with self.app.transfer_lock:
+                file_location = join(self.out_dir, 'main-{}'.format(filename))
+                shutil.move(files[0], file_location)
+            self.watermark(file_location)
             self.app.next_image(filename)
         elif len(files) > 1:
             # Create a collage.
-            print("collage_Start")
             create_collage(files, self.options, self.on_collage_complete)
 
     def get_filename(self):
         return "{}.jpg".format(str(uuid4()))
+
+    def watermark(self, filename):
+        """ Apply a watermark to an image """
+        mark = PIL.Image.open(WATERMARK)
+        im = PIL.Image.open(filename)
+        if im.mode != 'RGBA':
+            im = im.convert('RGBA')
+        layer = PIL.Image.new('RGBA', im.size, (0,0,0,0))
+        position = (im.size[0] - mark.size[0], im.size[1] - mark.size[1])
+        layer.paste(mark, position)
+        PIL.Image.composite(layer, im, layer).save(filename)
