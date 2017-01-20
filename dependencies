@@ -1,0 +1,10 @@
+cffi==1.9.1
+Django==1.9.7
+facebook-sdk==1.0.0
+Pillow==3.3.0
+pycparser==2.17
+PyQt5==5.7.1
+QtPy==1.2.0
+requests==2.10.0
+sip==4.19
+virtualenv==15.0.2
